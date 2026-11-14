@@ -1,13 +1,12 @@
 # Plataforma Telegram Nina
 
-Este repositorio contiene una única plataforma modular Next.js 15 con cuatro superficies conectadas a la misma fuente de datos Supabase:
+Plataforma modular para gestionar un bot de Telegram, accesos VIP, una MiniApp y el contenido de un catálogo desde paneles de administración.
 
-1. **VIP Guard**: webhook y bot de Telegram, suscripciones, renovaciones, invitaciones, expulsiones, cron, incidencias y logs.
-2. **Dashboard VIP Guard** (`/admin/vip-guard`): operación privada de usuarios, accesos, migración, suscripciones, incidencias, configuración y sesiones administrativas.
-3. **MiniApp/WebApp** (`/`): inicio, estado de acceso, renovación manual, invitación, marketplace y contacto, autenticados mediante `initData` de Telegram.
-4. **CMS WebApp** (`/admin/webapp`): contenido público, branding, planes, categorías, productos, imágenes e intereses del marketplace.
+Los cuatro módulos comparten Next.js 15, servicios de servidor y datos de Supabase. El pago y su validación son manuales; la MiniApp consulta el estado de acceso y no concede permisos por sí sola.
 
-No son cuatro aplicaciones independientes. Comparten App Router, servicios de servidor, autenticación administrativa y esquema canónico, manteniendo límites de responsabilidad claros. La arquitectura oficial detallada está en [docs/FUSION_ARCHITECTURE.md](docs/FUSION_ARCHITECTURE.md).
+[Relación entre módulos](#relación-entre-módulos) · [Catálogo y solicitudes de interés](#catálogo-y-solicitudes-de-interés) · [Funciones activas y desactivadas](#funciones-activas-y-desactivadas) · [Tecnologías y entorno](#tecnologías-y-entorno) · [Desarrollo local](#desarrollo-local) · [Pruebas y verificación](#pruebas-y-verificación)
+
+---
 
 ## Relación entre módulos
 
@@ -17,7 +16,7 @@ El CMS WebApp administra `webapp_settings`, `vip_plans`, `marketplace_categories
 
 Todo acceso de aplicación a Supabase utiliza `service_role` exclusivamente en módulos de servidor. Las tablas revocan acceso a `anon` y `authenticated`; la autorización efectiva depende de las validaciones de `initData`, sesión admin, origen y permisos ejecutadas antes de cada operación. La MiniApp no conecta directamente a Supabase, Realtime ni Storage.
 
-## Marketplace
+## Catálogo y solicitudes de interés
 
 El catálogo activo es dinámico y canónico; no depende de datos escritos en componentes. El usuario puede ver categorías publicadas, abrir el detalle de un artículo, consultar imagen, descripción, condiciones, precio/etiqueta y registrar interés. Un artículo oculto/archivado o perteneciente a una categoría no publicada no aparece y tampoco acepta solicitudes directas por ID.
 
@@ -42,7 +41,7 @@ Desactivadas por defecto:
 
 No hay checkout, Stripe ni concesión automática de acceso por pagos. El pago y la validación siguen siendo manuales. No hay acceso cliente directo a Supabase Realtime.
 
-## Stack y entorno
+## Tecnologías y entorno
 
 Requiere Node 22, npm, Docker/Colima y Supabase CLI. Copia `.env.example` a `.env.local`; nunca incluyas ese archivo en Git o en el ZIP. Las variables principales son `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, secretos de Telegram/cron/admin/sesión y las variables `NEXT_PUBLIC_*` documentadas en `.env.example`.
 
@@ -99,7 +98,7 @@ npm run zip:verify
 
 El artefacto se genera en `_exports/webapptelegram-nina-clean.zip`. La verificación excluye `.env*` privados, secretos, `.next`, `node_modules`, cobertura, logs, estado local de Supabase, temporales y datos personales, e incluye `FINAL_REPORT.md`.
 
-## Pendiente de staging
+## Validaciones pendientes en el entorno de pruebas
 
 El entorno local usa Telegram simulado y Supabase local. Antes de producción deben verificarse en staging: webhook y permisos con bot real, entrega/expiración de invitaciones reales, expulsión y desbloqueo en un grupo real, alertas Telegram, dominio/TLS/CSP de Vercel, cabeceras del proxy real y comportamiento de WebView en Telegram iOS/Android. Consulta [docs/STAGING_E2E_CHECKLIST.md](docs/STAGING_E2E_CHECKLIST.md).
 
