@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Start local Supabase
+        run: npm run supabase:start
+      - name: Reset database from migrations and seed
+        run: npm run supabase:reset
+      - run: npm run supabase:wait
+      - run: npm run test:db
+      - run: npm run supabase:lint
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:coverage
+      - run: npm run test:integration:coverage
+      - run: npm run db:performance
+      - run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e:build
+      - run: npm run test:e2e
+      - run: npm audit --audit-level=high
+      - name: Prove a second clean reconstruction
+        run: |
+          npm run supabase:reset
+          npm run supabase:wait
+          npm run test:db
+          npm run test:integration
+      - run: npm run zip:clean
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-diagnostics
+          path: |
+            coverage/
+            coverage-integration/
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Stop local services
+        if: always()
+        run: npm run supabase:clean

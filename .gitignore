@@ -1,0 +1,46 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+/coverage-integration
+/playwright-report
+/test-results
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+/_exports
+
+# misc
+.DS_Store
+**/.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+.env*.local
+.env.production
+.env.development
+!.env.example
+
+# typescript
+*.tsbuildinfo
+
+# vercel
+.vercel
+
+# local exports and accidental Finder duplicates
+*.zip
+* 2.*
+* 2

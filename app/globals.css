@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Fallbacks used until Telegram injects its theme params. */
+  --tg-theme-bg-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f4f4f5;
+  --tg-theme-text-color: #0f0f0f;
+  --tg-theme-hint-color: #707579;
+  --tg-theme-link-color: #2481cc;
+  --tg-theme-button-color: #2481cc;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-destructive-text-color: #df3f40;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--tg-theme-secondary-bg-color);
+  color: var(--tg-theme-text-color);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
